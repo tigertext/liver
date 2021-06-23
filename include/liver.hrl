@@ -28,6 +28,7 @@
     email                       => liver_livr_rules,
     url                         => liver_livr_rules,
     iso_date                    => liver_livr_rules,
+    iso_datetime                => liver_livr_rules,
     equal_to_field              => liver_livr_rules,
 
     %% LIVR meta rules
@@ -75,6 +76,7 @@
     not_positive_decimal    => <<"NOT_POSITIVE_DECIMAL">>,
     wrong_format            => <<"WRONG_FORMAT">>,
     wrong_date              => <<"WRONG_DATE">>,
+    wrong_time              => <<"WRONG_TIME">>,
     wrong_email             => <<"WRONG_EMAIL">>,
     wrong_url               => <<"WRONG_URL">>,
     fields_not_equal        => <<"FIELDS_NOT_EQUAL">>,

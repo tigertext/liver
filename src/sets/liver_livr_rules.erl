@@ -30,6 +30,7 @@
 -export([email/3]).
 -export([url/3]).
 -export([iso_date/3]).
+-export([iso_datetime/3]).
 -export([equal_to_field/3]).
 
 %% meta rules
@@ -430,6 +431,47 @@ iso_date(_Args, <<Y:4/binary, "-", M:2/binary, "-", D:2/binary>>, _Opts) ->
 iso_date(_Args, Value, _Opts) when is_binary(Value) ->
     {error, wrong_date};
 iso_date(_Args, _Value, _Opts) ->
+    {error, format_error}.
+
+iso_datetime(_Args, <<>> = Value, _Opts) ->
+    {ok, Value};
+iso_datetime(Args, DateTime, Opts) ->
+    [Date, Time] = try
+                       binary:split(DateTime, <<"T">>)
+                   catch
+                       _:_ ->
+                           {error, wrong_datetime}
+                   end,
+    case iso_date(Args, Date, Opts) of
+        {ok, Date1} ->
+            case iso_datetime(Time) of
+                {ok, Time1} ->
+                    {ok, {Date1, Time1}};
+                {error, _} = Error1 ->
+                    Error1
+            end;
+        {error, _} = Error1 ->
+            Error1
+    end.
+
+iso_datetime(<<HH:2/binary, ":", MM:2/binary, ":", SS:2/binary, _/binary>>) ->
+    try
+        Hour = binary_to_integer(HH),
+        Minute = binary_to_integer(MM),
+        Second = binary_to_integer(SS),
+        case Hour >= 0 andalso Hour < 24 andalso
+            Minute >= 0 andalso Minute < 60 andalso
+            Second >= 0 andalso Second < 60 of
+            true ->
+                {ok, {Hour, Minute, Second}};
+            false ->
+                {error, wrong_time}
+        end
+    catch
+        _:_ ->
+            {error, wrong_time}
+    end;
+iso_datetime(_Value) ->
     {error, format_error}.
 
 equal_to_field(_Args, <<>> = Value, _Opts) ->
