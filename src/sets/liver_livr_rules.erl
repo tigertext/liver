@@ -436,22 +436,22 @@ iso_date(_Args, _Value, _Opts) ->
 iso_datetime(_Args, <<>> = Value, _Opts) ->
     {ok, Value};
 iso_datetime(Args, DateTime, Opts) ->
-    [Date, Time] = try
-                       binary:split(DateTime, <<"T">>)
-                   catch
-                       _:_ ->
-                           {error, format_error}
-                   end,
-    case iso_date(Args, Date, Opts) of
-        {ok, Date1} ->
-            case iso_datetime(Time) of
-                {ok, Time1} ->
-                    {ok, {Date1, Time1}};
-                {error, _} = Error1 ->
-                    Error1
-            end;
-        {error, _} = Error1 ->
-            Error1
+    try
+        [Date, Time] = binary:split(DateTime, <<"T">>),
+        case iso_date(Args, Date, Opts) of
+            {ok, Date1} ->
+                case iso_datetime(Time) of
+                    {ok, Time1} ->
+                        {ok, {Date1, Time1}};
+                    {error, _} = Error1 ->
+                        Error1
+                end;
+            {error, _} = Error1 ->
+                Error1
+        end
+    catch
+        _:_ ->
+            {error, format_error}
     end.
 
 iso_datetime(<<HH:2/binary, ":", MM:2/binary, ":", SS:2/binary, _/binary>>) ->
