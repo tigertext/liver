@@ -471,6 +471,8 @@ iso_datetime(<<HH:2/binary, ":", MM:2/binary, ":", SS:2/binary, _/binary>>) ->
         _:_ ->
             {error, wrong_time}
     end;
+iso_datetime(Value) when is_binary(Value) ->
+    {error, wrong_time};
 iso_datetime(_Value) ->
     {error, format_error}.
 
