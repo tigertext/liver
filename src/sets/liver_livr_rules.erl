@@ -440,7 +440,7 @@ iso_datetime(Args, DateTime, Opts) ->
                        binary:split(DateTime, <<"T">>)
                    catch
                        _:_ ->
-                           {error, wrong_datetime}
+                           {error, format_error}
                    end,
     case iso_date(Args, Date, Opts) of
         {ok, Date1} ->
